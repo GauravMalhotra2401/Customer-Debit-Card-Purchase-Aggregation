@@ -1,5 +1,5 @@
+import csv
 from random import randint, choice
-import pandas as pd
 
 # Define customer and bank names
 customer_names = ["John Doe", "Jane Smith", "Michael Brown", "Sarah Lee", "David Miller"]
@@ -48,10 +48,12 @@ def generate_transactions(num_transactions, current_date):
 
 
 def write_to_csv(data, filename):
-    """Write data to a CSV file using pandas"""
-    df = pd.DataFrame(data)
-    df.to_csv(filename, index=False)
-    print(f"Generated mock transaction data in {filename}")
+    """Writes data to a CSV file"""
+    with open(filename, "w", newline="") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=["customer_id", "name", "debit_card_number", "debit_card_type",
+                                                      "bank_name", "transaction_date", "amount_spend"])
+        writer.writeheader()
+        writer.writerows(data)
     return
 
 
