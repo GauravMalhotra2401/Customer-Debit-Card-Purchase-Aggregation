@@ -1,6 +1,7 @@
 import mysql.connector
 import boto3
 import json
+import base64
 
 # Initialize a Secrets Manager client
 client = boto3.client('secretsmanager', region_name='us-east-1')
