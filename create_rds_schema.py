@@ -1,12 +1,12 @@
+import base64
 import mysql.connector
 import boto3
 import json
-import base64
 
 # Initialize a Secrets Manager client
 client = boto3.client('secretsmanager', region_name='us-east-1')
-
 secret_name = 'mysql-secret'
+
 
 def get_rds_credentials(secret_name):
     try:
@@ -26,14 +26,16 @@ def get_rds_credentials(secret_name):
         print(f"Error fetching secret: {e}")
         return None
 
+
 def connect_and_create_db():
+    global password
     connection = None
 
     try:
 
         credentials = get_rds_credentials(secret_name)
         if credentials:
-            print("Fetched RDS Credentials:")
+            print("Fecthed RDS Credentials:")
             username = credentials['username']
             password = credentials['password']
             # Depending on how you've structured your secret, you might need
@@ -50,31 +52,30 @@ def connect_and_create_db():
 
         if connection.is_connected():
             print("Successfully connected to the RDS instance.")
-            
+
             cursor = connection.cursor()
-            
+
             # Create a new database
-            cursor.execute("CREATE DATABASE IF NOT EXISTS customers;")
+            cursor.execute("create database if not exists customers;")
             print("Database created successfully.")
-            
-            cursor.execute("SHOW DATABASES;")
+
+            cursor.execute("show databases;")
             print(cursor.fetchall())
 
             cursor.execute("use customers;")
 
             table_schema = """create table customer_transactions (
-            customer_id int not null,
-            debit_card_number varchar(255) not null,
-            bank_name varchar(255) not null,
-            total_amount_spent decimal(10,2)not null,
-            PRIMARY KEY(customer_id, debit_card_number, bank_name));"""
-
+                              customer_id int not null,
+                              debit_card_number varchar(255) not null,
+                              bank_name varchar(255) not null,
+                              total_amount_spend decimal(10,2) not null,
+                              primary key (customer_id, debit_card_number, bank_name));"""
             cursor.execute(table_schema)
             print("Table created successfully.")
 
             cursor.execute("show tables;")
             print(cursor.fetchall())
-            
+
         else:
             print("Failed to connect to the RDS instance.")
     except mysql.connector.Error as e:
@@ -86,6 +87,4 @@ def connect_and_create_db():
             cursor.close()
             connection.close()
             print("Connection closed.")
-
-if __name__ == "__main__":
-    connect_and_create_db()
+    return
